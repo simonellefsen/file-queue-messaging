@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: consumer
+spec:
+  replicas: {{ .Values.consumer.replicaCount }}
+  selector:
+    matchLabels:
+      app: consumer
+  template:
+    metadata:
+      labels:
+        app: consumer
+    spec:
+      containers:
+        - name: docker-consumer
+          image: "{{ if .Values.imageRegistry.enabled }}{{ .Values.imageRegistry.registry }}/{{ end }}{{ .Values.consumer.image }}"
+          imagePullPolicy: {{ .Values.imagePullPolicy }}
+          ports:
+            - containerPort: {{ .Values.consumer.port }}
+          envFrom:
+            - configMapRef:
+                name: file-queue-config
+          volumeMounts:
+            - name: shared-data
+              mountPath: /data
+          readinessProbe:
+            httpGet:
+              path: /health/ready
+              port: {{ .Values.consumer.port }}
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health/live
+              port: {{ .Values.consumer.port }}
+            initialDelaySeconds: 5
+            periodSeconds: 10
+      volumes:
+        - name: shared-data
+          persistentVolumeClaim:
+            claimName: shared-data-pvc
+

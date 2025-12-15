@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: producer
+spec:
+  replicas: {{ .Values.producer.replicaCount }}
+  selector:
+    matchLabels:
+      app: producer
+  template:
+    metadata:
+      labels:
+        app: producer
+    spec:
+      containers:
+        - name: docker-producer
+          image: "{{ if .Values.imageRegistry.enabled }}{{ .Values.imageRegistry.registry }}/{{ end }}{{ .Values.producer.image }}"
+          imagePullPolicy: {{ .Values.imagePullPolicy }}
+          ports:
+            - containerPort: {{ .Values.producer.port }}
+          envFrom:
+            - configMapRef:
+                name: file-queue-config
+          volumeMounts:
+            - name: shared-data
+              mountPath: /data
+          readinessProbe:
+            httpGet:
+              path: /health/ready
+              port: {{ .Values.producer.port }}
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health/live
+              port: {{ .Values.producer.port }}
+            initialDelaySeconds: 5
+            periodSeconds: 10
+      volumes:
+        - name: shared-data
+          persistentVolumeClaim:
+            claimName: shared-data-pvc
+

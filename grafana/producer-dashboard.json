@@ -1,0 +1,60 @@
+{
+  "id": null,
+  "uid": "producer-dashboard",
+  "title": "Producer Service Dashboard",
+  "timezone": "browser",
+  "schemaVersion": 36,
+  "version": 1,
+  "refresh": "10s",
+  "panels": [
+    {
+      "type": "stat",
+      "title": "Lines Read Total",
+      "id": 1,
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "producer_lines_read_total",
+          "legendFormat": "lines",
+          "refId": "A"
+        }
+      ],
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "center"
+      }
+    },
+    {
+      "type": "graph",
+      "title": "Lines Read Over Time",
+      "id": 2,
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "increase(producer_lines_read_total[5m])",
+          "legendFormat": "read",
+          "refId": "A"
+        }
+      ],
+      "lines": true,
+      "fill": 3
+    },
+    {
+      "type": "graph",
+      "title": "Publish Latency",
+      "id": 3,
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, sum(rate(producer_queue_publish_latency_seconds_bucket[5m])) by (le))",
+          "legendFormat": "p95",
+          "refId": "A"
+        }
+      ],
+      "lines": true,
+      "fill": 3
+    }
+  ]
+}
+

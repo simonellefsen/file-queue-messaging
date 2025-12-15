@@ -1,0 +1,43 @@
+rabbitmq:
+  image: rabbitmq:3.12-management
+  storage: 1Gi
+
+producer:
+  image: "producer:latest"
+  replicaCount: 1
+  port: 8000
+
+consumer:
+  image: "consumer:latest"
+  replicaCount: 1
+  port: 8001
+
+sharedVolume:
+  size: 1Gi
+
+config:
+  inputFile: "/data/input.txt"
+  outputFile: "/data/output.txt"
+  amqpUrl: "amqp://guest:guest@rabbitmq:5672/"
+
+monitoring:
+  enabled: true
+
+autoscaling:
+  producer:
+    enabled: true
+    minReplicas: 1
+    maxReplicas: 5
+    cpuThreshold: 60
+
+  consumer:
+    enabled: true
+    minReplicas: 1
+    maxReplicas: 10
+    cpuThreshold: 50
+
+imageRegistry:
+  enabled: false
+  registry: "localhost:5000"
+
+imagePullPolicy: IfNotPresent

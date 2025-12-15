@@ -1,0 +1,24 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: file-queue-monitor
+spec:
+  selector:
+    matchLabels:
+      app: producer
+  endpoints:
+    - port: 8000
+      path: /metrics
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: file-queue-monitor-consumer
+spec:
+  selector:
+    matchLabels:
+      app: consumer
+  endpoints:
+    - port: 8001
+      path: /metrics
+

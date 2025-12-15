@@ -1,0 +1,21 @@
+{{- if .Values.autoscaling.producer.enabled }}
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: producer-hpa
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: producer
+  minReplicas: {{ .Values.autoscaling.producer.minReplicas }}
+  maxReplicas: {{ .Values.autoscaling.producer.maxReplicas }}
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.autoscaling.producer.cpuThreshold }}
+{{- end }}
+

@@ -1,0 +1,8 @@
+apiVersion: v2
+name: file-queue-messaging
+description: Async file-to-queue-to-file pipeline with RabbitMQ, Producer, Consumer
+version: 0.1.0
+appVersion: "1.0.0"
+
+dependencies: []
+

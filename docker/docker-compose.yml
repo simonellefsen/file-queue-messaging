@@ -1,0 +1,57 @@
+version: "3.9"
+
+services:
+  rabbitmq:
+    image: rabbitmq:3.12-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"     # AMQP
+      - "15672:15672"   # Management UI
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "status"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  producer:
+    build:
+      context: ..
+      dockerfile: docker/producer.Dockerfile
+    container_name: producer
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    volumes:
+      - ../data:/data
+    environment:
+      - PYTHONUNBUFFERED=1
+    ports:
+      - "8000:8000"  # metrics + health
+
+  producer-tests:
+    build:
+      context: ..
+      dockerfile: docker/producer.Dockerfile
+    command: ["pytest", "-q"]
+
+  consumer:
+    build:
+      context: ..
+      dockerfile: docker/consumer.Dockerfile
+    container_name: consumer
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    volumes:
+      - ../data:/data
+    environment:
+      - PYTHONUNBUFFERED=1
+    ports:
+      - "8001:8001"  # metrics + health
+
+  consumer-tests:
+    build:
+      context: ..
+      dockerfile: docker/consumer.Dockerfile
+    command: ["pytest", "-q"]
+

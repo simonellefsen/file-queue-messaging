@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: file-queue-config
+data:
+  INPUT_FILE: "/data/input.txt"
+  OUTPUT_FILE: "/data/output.txt"
+  AMQP_URL: "amqp://guest:guest@rabbitmq:5672/"
+
