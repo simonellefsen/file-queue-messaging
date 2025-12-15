@@ -42,6 +42,7 @@ hello
 ## 3. Deploy via Helm
 
 ### Prerequisites
+ - docker compose build artefacts
  - kubectl
  - helm
  - kubernetes cluster (will be using k3d for local development)
@@ -52,6 +53,11 @@ helm repo add prometheus-community https://prometheus-community.github.io/helm-c
 helm repo update
 # then install it
 helm install monitoring prometheus-community/kube-prometheus-stack
+```
+
+### Import docker build images to k3d default cluster
+```
+k3d image import docker-producer:latest docker-consumer:latest
 ```
 
 ### Install chart

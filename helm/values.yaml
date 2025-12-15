@@ -3,12 +3,12 @@ rabbitmq:
   storage: 1Gi
 
 producer:
-  image: "producer:latest"
+  image: "docker-producer:latest"
   replicaCount: 1
   port: 8000
 
 consumer:
-  image: "consumer:latest"
+  image: "docker-consumer:latest"
   replicaCount: 1
   port: 8001
 
