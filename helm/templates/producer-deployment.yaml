@@ -17,7 +17,8 @@ spec:
           image: "{{ if .Values.imageRegistry.enabled }}{{ .Values.imageRegistry.registry }}/{{ end }}{{ .Values.producer.image }}"
           imagePullPolicy: {{ .Values.imagePullPolicy }}
           ports:
-            - containerPort: {{ .Values.producer.port }}
+            - name: metrics
+              containerPort: {{ .Values.producer.port }}
           envFrom:
             - configMapRef:
                 name: file-queue-config

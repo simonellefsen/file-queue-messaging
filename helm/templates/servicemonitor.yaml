@@ -3,24 +3,30 @@ apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
   name: producer-monitor
+  labels:
+    release: {{ .Values.monitoring.releaseLabel }}
+    app: producer
 spec:
   selector:
     matchLabels:
       app: producer
   endpoints:
-    - port: "{{ .Values.producer.port }}"
-      path: /metrics
+    - port: metrics
+      path: /metrics/
+
 ---
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
   name: consumer-monitor
+  labels:
+    release: {{ .Values.monitoring.releaseLabel }}
+    app: consumer
 spec:
   selector:
     matchLabels:
       app: consumer
   endpoints:
-    - port: "{{ .Values.consumer.port }}"
-      path: /metrics
+    - port: metrics
+      path: /metrics/
 {{- end }}
-

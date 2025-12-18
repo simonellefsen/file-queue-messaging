@@ -8,6 +8,7 @@ spec:
   selector:
     app: producer
   ports:
-    - port: {{ .Values.producer.port }}
+    - name: metrics
+      port: {{ .Values.producer.port }}
       targetPort: {{ .Values.producer.port }}
 
