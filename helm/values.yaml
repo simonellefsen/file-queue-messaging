@@ -22,6 +22,7 @@ config:
 
 monitoring:
   enabled: true
+  releaseLabel: "monitoring"   # MUST match Prometheus selector (from your cluster)
 
 autoscaling:
   producer:

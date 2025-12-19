@@ -8,6 +8,7 @@ spec:
   selector:
     app: consumer
   ports:
-    - port: {{ .Values.consumer.port }}
+    - name: metrics
+      port: {{ .Values.consumer.port }}
       targetPort: {{ .Values.consumer.port }}
 
