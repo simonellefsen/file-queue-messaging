@@ -1,6 +1,8 @@
 import aio_pika
-from aio_pika import Message
-import asyncio
+import logging
+from metrics import PUBLISH_LATENCY
+
+logger = logging.getLogger("producer")
 
 class QueuePublisher:
     def __init__(self, amqp_url: str, queue_name: str):
@@ -8,14 +10,22 @@ class QueuePublisher:
         self.queue_name = queue_name
 
     async def connect(self):
+        logger.info(f"Connecting to RabbitMQ at {self.amqp_url}")
         self.connection = await aio_pika.connect_robust(self.amqp_url)
         self.channel = await self.connection.channel()
         self.queue = await self.channel.declare_queue(self.queue_name, durable=True)
 
-    async def publish(self, text: str):
-        msg = Message(text.encode())
-        await self.channel.default_exchange.publish(msg, routing_key=self.queue_name)
+        logger.info(f"Queue declared: {self.queue_name}")
 
-    async def close(self):
-        await self.connection.close()
+    async def publish(self, text: str):
+        message = aio_pika.Message(text.encode())
+
+        logger.info(f"Publishing message: {text!r}")
+
+        with PUBLISH_LATENCY.time():
+            await self.channel.default_exchange.publish(
+                message, routing_key=self.queue_name
+            )
+
+        logger.info(f"Message published to '{self.queue_name}'")
 
